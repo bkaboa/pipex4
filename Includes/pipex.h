@@ -1,4 +1,14 @@
-
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   pipex.h                                            :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: czang <marvin@42.fr>                       +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2022/03/31 21:40:17 by czang             #+#    #+#             */
+/*   Updated: 2022/03/31 21:46:31 by czang            ###   ########lyon.fr   */
+/*                                                                            */
+/* ************************************************************************** */
 
 #ifndef PIPEX_H
 # define PIPEX_H
@@ -19,24 +29,24 @@
  */
 typedef struct s_pipex
 {
-	pid_t id_process;
-	pid_t id_process2;
+	pid_t	id_process;
+	pid_t	id_process2;
 
-	int pipe[2];
+	int		pipe[2];
 
-	int	infile;
-	int	outfile;
+	int		infile;
+	int		outfile;
 
-	char **path;
-	char **comd_arg;
-	char *comd_path;
+	char	**path;
+	char	**comd_arg;
+	char	*comd_path;
 }t_pipex;
 
 typedef struct s_arg
 {
-	short ac;
-	char **av;
-	char **env;
+	short	ac;
+	char	**av;
+	char	**env;
 }t_arg;
 
 /*
@@ -59,7 +69,7 @@ typedef struct s_arg
  ******************************	parse_pipex	***
  */
 bool	print_error(char *err);
-bool    parse_pipex(t_arg arg);
+bool	parse_pipex(t_arg arg);
 
 /*
  *
@@ -72,7 +82,7 @@ void	free_child_pid(t_pipex *pipex);
  *
  ******************************	fork		***
  */
-int	ft_fork(t_pipex pipex, t_arg arg);
+int		ft_fork(t_pipex pipex, t_arg arg);
 
 /*
  *
@@ -82,7 +92,7 @@ size_t	ft_strlen(const char *s);
 char	*ft_strjoin(const char *s1, const char *s2);
 char	*ft_strdup(const char *s1);
 bool	ft_strncmp(const char *s1, const char *s2, int len);
-int	found_occur(char *s, char set);
+int		found_occur(char *s, char set);
 
 /*
  *

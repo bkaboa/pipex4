@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   parse_pipex.c                                      :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: czang <marvin@42.fr>                       +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2022/03/31 21:39:20 by czang             #+#    #+#             */
+/*   Updated: 2022/03/31 22:20:00 by czang            ###   ########lyon.fr   */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../Includes/pipex.h"
 
 bool	print_error(char *err)
@@ -5,12 +17,10 @@ bool	print_error(char *err)
 	if (errno)
 	{
 		perror(err);
-		printf("\n\n%d\n\n", errno);
 		strerror(errno);
 	}
 	else
 		write(2, err, ft_strlen(err));
-	printf("\n\n%d\n\n", errno);
 	return (false);
 }
 
@@ -30,14 +40,23 @@ static bool	find_path(t_pipex *pipex, char **env)
 		pipex->path[i] = ft_strjoin(pipex->path[i], "/");
 		i++;
 	}
+	*env = *env - 5;
 	return (true);
 }
 
-bool    parse_pipex(t_arg arg)
+static void	close_and_wait(t_pipex *pipex)
 {
-	t_pipex pipex;
+	close(pipex->pipe[0]);
+	close(pipex->pipe[1]);
+	waitpid(-1, NULL, 0);
+	waitpid(-1, NULL, 0);
+}
 
-    if (arg.ac != 4)
+bool	parse_pipex(t_arg arg)
+{
+	t_pipex	pipex;
+
+	if (arg.ac != 4)
 		return (print_error(ERR_INPUT));
 	pipex.infile = open((arg.av)[1], O_RDONLY);
 	if (pipex.infile < 0)
@@ -51,6 +70,11 @@ bool    parse_pipex(t_arg arg)
 	if (find_path(&pipex, arg.env) == false)
 		return (print_error(ERR_PATH));
 	if (ft_fork(pipex, arg) == false)
+	{
+		free_main_pid(&pipex);
 		return (false);
+	}
+	free_main_pid(&pipex);
+	close_and_wait(&pipex);
 	return (true);
 }

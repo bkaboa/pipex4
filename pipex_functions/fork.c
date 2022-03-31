@@ -1,7 +1,18 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   fork.c                                             :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: czang <marvin@42.fr>                       +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2022/03/31 21:39:21 by czang             #+#    #+#             */
+/*   Updated: 2022/03/31 22:17:06 by czang            ###   ########lyon.fr   */
+/*                                                                            */
+/* ************************************************************************** */
 
 #include "../Includes/pipex.h"
 
-static char	*find_comd_path(char **path, char  *comd)
+static char	*find_comd_path(char **path, char *comd)
 {
 	char	*comd_path;
 
@@ -13,6 +24,7 @@ static char	*find_comd_path(char **path, char  *comd)
 		free(comd_path);
 		path++;
 	}
+	print_error(comd);
 	return (NULL);
 }
 
@@ -24,14 +36,12 @@ static void	child1(t_pipex pipex, t_arg arg)
 	close(pipex.infile);
 	pipex.comd_arg = ft_split(arg.av[2], ' ');
 	pipex.comd_path = find_comd_path(pipex.path, pipex.comd_arg[0]);
-	dprintf(2, "\n\n\n %s \n\n\n", pipex.comd_path);
 	if (!pipex.comd_path)
 	{
 		free_child_pid(&pipex);
-		print_error(ERR_CMD1);
 		exit(1);
 	}
-	execve(pipex.comd_path, &arg.av[2], arg.env);
+	execve(pipex.comd_path, pipex.comd_arg, arg.env);
 }
 
 static void	child2(t_pipex pipex, t_arg arg)
@@ -42,17 +52,12 @@ static void	child2(t_pipex pipex, t_arg arg)
 	close(pipex.outfile);
 	pipex.comd_arg = ft_split(arg.av[3], ' ');
 	pipex.comd_path = find_comd_path(pipex.path, pipex.comd_arg[0]);
-	dprintf(2, "\n\n\n %s \n\n\n", pipex.comd_path);
 	if (!pipex.comd_path)
 	{
 		free_child_pid(&pipex);
-		print_error(ERR_CMD2);
 		exit(1);
 	}
-	dprintf(2, "\n\n\n %s \n\n\n", arg.av[3]);
-	dprintf(2, "\n\n\n %d \n\n\n", errno);
-	
-	execve(pipex.comd_path, &arg.av[3], arg.env);
+	execve(pipex.comd_path, pipex.comd_arg, arg.env);
 }
 
 int	ft_fork(t_pipex pipex, t_arg arg)
@@ -64,8 +69,7 @@ int	ft_fork(t_pipex pipex, t_arg arg)
 		child1(pipex, arg);
 	pipex.id_process2 = fork();
 	if (pipex.id_process2 == -1)
-		return (false);
-		//return (print_error(ERR_FORK, pipex.id_process2));
+		return (print_error(ERR_FORK));
 	if (pipex.id_process2 == 0)
 		child2(pipex, arg);
 	return (true);
