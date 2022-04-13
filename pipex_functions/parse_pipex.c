@@ -52,18 +52,31 @@ static void	close_and_wait(t_pipex *pipex)
 	waitpid(-1, NULL, 0);
 }
 
+static bool	open_files(t_pipex *pipex, t_arg arg)
+{
+	pipex->outfile = open((arg.av)[arg.ac], O_CREAT | O_WRONLY | O_TRUNC, 00644);
+	if (pipex->outfile < 0)
+	{
+		close(pipex->outfile);
+		return (print_error((arg.av)[arg.ac]));
+	}
+	pipex->infile = open((arg.av)[1], O_RDONLY);
+	if (pipex->infile < 0)
+	{
+		close(pipex->infile);
+		return (print_error((arg.av)[1]));
+	}
+	return (true);
+}
+
 bool	parse_pipex(t_arg arg)
 {
 	t_pipex	pipex;
 
 	if (arg.ac != 4)
 		return (print_error(ERR_INPUT));
-	pipex.infile = open((arg.av)[1], O_RDONLY);
-	if (pipex.infile < 0)
-		return (print_error((arg.av)[1]));
-	pipex.outfile = open((arg.av)[arg.ac], O_CREAT | O_WRONLY | O_TRUNC, 00644);
-	if (pipex.outfile < 0)
-		return (print_error((arg.av)[arg.ac]));
+	if (open_files(&pipex, arg) == false)
+		return (false);
 	pipe(pipex.pipe);
 	if (errno)
 		return (print_error(ERR_PIPE));

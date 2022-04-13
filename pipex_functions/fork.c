@@ -16,6 +16,8 @@ static char	*find_comd_path(char **path, char *comd)
 {
 	char	*comd_path;
 
+	if (comd[0] == '\0')
+		return (NULL);
 	while (*path)
 	{
 		comd_path = ft_strjoin(*path, comd);

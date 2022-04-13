@@ -58,6 +58,7 @@ typedef struct s_arg
 # define ERR_INPUT "Invalid number of arguments.\n"
 # define ERR_CMD1 "Command 1 not found\n"
 # define ERR_CMD2 "Command 2 not found\n"
+# define ERR_CMD "Command not found\n"
 # define ERR_PIPE "error with pipe occured\n"
 # define ERR_FORK "FORK: "
 # define SPLIT_ERROR "split error in path\n"
