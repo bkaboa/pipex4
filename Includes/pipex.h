@@ -90,7 +90,7 @@ int		ft_fork(t_pipex pipex, t_arg arg);
  ******************************	small_utils	***
  */
 size_t	ft_strlen(const char *s);
-char	*ft_strjoin(const char *s1, const char *s2);
+char	*ft_strjoin(char *s1, const char *s2);
 char	*ft_strdup(const char *s1);
 bool	ft_strncmp(const char *s1, const char *s2, int len);
 int		found_occur(char *s, char set);

@@ -18,6 +18,10 @@ static char	*find_comd_path(char **path, char *comd)
 
 	if (comd[0] == '\0')
 		return (NULL);
+	if (access(comd, 0) == 0 && (comd[0] == '/' \
+				|| (comd[0] == '.' && comd[1] == '/')
+				|| (comd[0] == '.' && comd[1] == '.' && comd[2] == '/')))
+		return (comd);
 	while (*path)
 	{
 		comd_path = ft_strjoin(*path, comd);
