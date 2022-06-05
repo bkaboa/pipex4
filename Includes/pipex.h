@@ -6,7 +6,7 @@
 /*   By: czang <marvin@42.fr>                       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/31 21:40:17 by czang             #+#    #+#             */
-/*   Updated: 2022/03/31 21:46:31 by czang            ###   ########lyon.fr   */
+/*   Updated: 2022/06/05 15:46:05 by czang            ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,8 +25,34 @@
 
 /*
  *
+ ******************************	define		***
+ */
+# define ERR_INPUT		"Invalid number of arguments.\n"
+# define ERR_CMD		" : Command not found\n"
+# define ERR_PIPE		"error with pipe occured\n"
+# define ERR_FORK		"FORK: "
+# define SPLIT_ERROR	"split error in path\n"
+# define PERM_DENIED	" : permission denied\n"
+# define FILE_2			" : no such file or permission denied\n"
+# define ERR_PATH		"path error\n"
+# define NO_ERRNO		0
+# define MAX_ERRNO		3
+
+/*
+ *
  ******************************	structure	***
  */
+
+static const struct {
+	int		code;
+	char	*msg;
+} s_err[] = {
+	{0, NO_ERRNO},
+	{1, PERM_DENIED},
+	{2, ERR_CMD},
+	{3, FILE_2},
+};
+
 typedef struct s_pipex
 {
 	pid_t	id_process;
@@ -51,26 +77,11 @@ typedef struct s_arg
 
 /*
  *
- ******************************	define		***
- */
-# define ERR_INFILE "Infile"
-# define ERR_OUTFILE "Outfile"
-# define ERR_INPUT "Invalid number of arguments.\n"
-# define ERR_CMD1 "Command 1 not found\n"
-# define ERR_CMD2 "Command 2 not found\n"
-# define ERR_CMD "Command not found\n"
-# define ERR_PIPE "error with pipe occured\n"
-# define ERR_FORK "FORK: "
-# define SPLIT_ERROR "split error in path\n"
-# define ERR_PATH "path_error\n"
-# define NO_ERRNO 0
-
-/*
- *
  ******************************	parse_pipex	***
  */
 bool	print_error(char *err);
 bool	parse_pipex(t_arg arg);
+bool	print_err(char *err);
 
 /*
  *

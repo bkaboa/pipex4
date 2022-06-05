@@ -1,21 +1,21 @@
 
-include			config/srcs.mk
 
-EXEC	=		pipex
+include 	config/srcs.mk
 
-IPATH	=		Includes
-OPATH	=		.obj
+NAME	=	pipex
 
-FFLAGS	=		-fsanitize=address -g3
-CFLAGS	=		-Werror -Wextra -Wall
-IFLAGS	=		-I $(IPATH)
-OBJS	=		$(addprefix $(OPATH)/, $(SRCS:.c=.o))
+IPATH	=	Includes
+OPATH	=	.OBJ
+MEMFLAGS=	-fsanitize=address -g3
+CFLAGS	=	-Wall -Werror -Wextra
+IFLAGS	=	-I $(IPATH)
+OBJS	=	$(addprefix $(OPATH)/, $(SRCS:.c=.o))
 
-INC		=		$(addprefix $(IPATH)/, pipex.h)
-	
-all:			$(EXEC)
+INC		=	$(addprefix $(IPATH)/, pipex.h)
 
-$(EXEC):		$(OBJS)
+all:			$(NAME)
+
+$(NAME):		$(OBJS)
 	@$(CC) $(CFLAGS) $^ -o $@
 
 re:				fclean all
@@ -24,11 +24,13 @@ $(OPATH)/%.o:	%.c $(INC) config/srcs.mk Makefile
 	@mkdir -p $(dir $@)
 	$(CC) $(CFLAGS) $(IFLAGS) -c $< -o $@
 
-memoire:		CFLAGS += $(FFLAGS)
+memoire:		CFLAGS += $(MEMFLAGS)
 memoire:		re
 
 clean:
 	@$(RM) $(OBJS)
 
 fclean:			clean
-	@$(RM) $(EXEC)
+	@$(RM) $(NAME)
+
+PHONY: re clean fclean all

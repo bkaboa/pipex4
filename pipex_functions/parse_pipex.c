@@ -6,23 +6,11 @@
 /*   By: czang <marvin@42.fr>                       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/31 21:39:20 by czang             #+#    #+#             */
-/*   Updated: 2022/03/31 22:24:03 by czang            ###   ########lyon.fr   */
+/*   Updated: 2022/06/05 16:06:49 by czang            ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../Includes/pipex.h"
-
-bool	print_error(char *err)
-{
-	if (errno)
-	{
-		perror(err);
-		strerror(errno);
-	}
-	else
-		write(2, err, ft_strlen(err));
-	return (false);
-}
 
 static bool	find_path(t_pipex *pipex, char **env)
 {
@@ -54,18 +42,22 @@ static void	close_and_wait(t_pipex *pipex)
 
 static bool	open_files(t_pipex *pipex, t_arg arg)
 {
-	pipex->outfile = open((arg.av)[arg.ac], O_CREAT | O_WRONLY | O_TRUNC, 00644);
+	pipex->outfile = \
+		open((arg.av)[arg.ac], O_CREAT | O_WRONLY | O_TRUNC, 00644);
 	if (pipex->outfile < 0)
 	{
 		close(pipex->outfile);
-		return (print_error((arg.av)[arg.ac]));
+		errno = 1;
+		return (print_err((arg.av)[arg.ac]));
 	}
 	pipex->infile = open((arg.av)[1], O_RDONLY);
 	if (pipex->infile < 0)
 	{
 		close(pipex->infile);
-		return (print_error((arg.av)[1]));
+		errno = 3;
+		print_err((arg.av)[1]);
 	}
+	errno = 0;
 	return (true);
 }
 

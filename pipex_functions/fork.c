@@ -6,7 +6,7 @@
 /*   By: czang <marvin@42.fr>                       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/31 21:39:21 by czang             #+#    #+#             */
-/*   Updated: 2022/03/31 22:17:06 by czang            ###   ########lyon.fr   */
+/*   Updated: 2022/06/05 15:46:59 by czang            ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,12 +16,11 @@ static char	*find_comd_path(char **path, char *comd)
 {
 	char	*comd_path;
 
+	if ((comd[0] == '.' && comd[1] == '/') || comd[0] == '/' \
+			|| (comd[0] == '.' && comd[1] == '.' && comd[2] == '/'))
+		return (comd);
 	if (comd[0] == '\0')
 		return (NULL);
-	if (access(comd, 0) == 0 && (comd[0] == '/' \
-				|| (comd[0] == '.' && comd[1] == '/')
-				|| (comd[0] == '.' && comd[1] == '.' && comd[2] == '/')))
-		return (comd);
 	while (*path)
 	{
 		comd_path = ft_strjoin(*path, comd);
@@ -30,7 +29,6 @@ static char	*find_comd_path(char **path, char *comd)
 		free(comd_path);
 		path++;
 	}
-	print_error(comd);
 	return (NULL);
 }
 
@@ -42,12 +40,12 @@ static void	child1(t_pipex pipex, t_arg arg)
 	close(pipex.infile);
 	pipex.comd_arg = ft_split(arg.av[2], ' ');
 	pipex.comd_path = find_comd_path(pipex.path, pipex.comd_arg[0]);
-	if (!pipex.comd_path)
+	if (execve(pipex.comd_path, pipex.comd_arg, arg.env) == -1)
 	{
-		free_child_pid(&pipex);
+		errno = 2;
+		print_err(arg.av[2]);
 		exit(1);
 	}
-	execve(pipex.comd_path, pipex.comd_arg, arg.env);
 }
 
 static void	child2(t_pipex pipex, t_arg arg)
@@ -60,7 +58,8 @@ static void	child2(t_pipex pipex, t_arg arg)
 	pipex.comd_path = find_comd_path(pipex.path, pipex.comd_arg[0]);
 	if (!pipex.comd_path)
 	{
-		free_child_pid(&pipex);
+		errno = 2;
+		print_err(arg.av[3]);
 		exit(1);
 	}
 	execve(pipex.comd_path, pipex.comd_arg, arg.env);
